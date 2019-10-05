@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.9.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.syphan.practice</groupId>
+    <artifactId>common-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>common-service</name>
+    <description>Practice project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.plugins.version>3.1.1</maven.plugins.version>
+        <fasterxml.jackson.core.version>2.10.0</fasterxml.jackson.core.version>
+        <spring.data.commons.version>2.2.0.RELEASE</spring.data.commons.version>
+        <spring.data.jpa.version>2.1.8.RELEASE</spring.data.jpa.version>
+        <querydsl.jpa.version>4.1.3</querydsl.jpa.version>
+        <jsonwebtoken.version>0.9.1</jsonwebtoken.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <!--            <optional>true</optional>-->
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--        Jackson Annotations-->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${fasterxml.jackson.core.version}</version>
+            </dependency>
+
+            <!--        Spring Data Core for PageImpl-->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-commons</artifactId>
+                <version>${spring.data.commons.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring.data.jpa.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>spring-data-commons</artifactId>
+                        <groupId>org.springframework.data</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!--   jwt    -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jsonwebtoken.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <distributionManagement>
+                <repository>
+                    <id>nexus-release</id>
+                    <name>maven-releases</name>
+                    <url>http://localhost:8800/repository/maven-releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>nexus-snapshot</id>
+                    <name>maven-snapshots</name>
+                    <url>http://localhost:8800/repository/maven-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+
+        <!--        <profile>-->
+        <!--            <id>prod</id>-->
+
+        <!--            <distributionManagement>-->
+        <!--                <repository>-->
+        <!--                    <id>nexus-release</id>-->
+        <!--                    <name>vela.core-releases</name>-->
+        <!--                    <url>https://repo.velacorp.vn/repository/vela.core-releases/</url>-->
+        <!--                </repository>-->
+        <!--                <snapshotRepository>-->
+        <!--                    <id>nexus-snapshot</id>-->
+        <!--                    <name>vela.core-snapshots</name>-->
+        <!--                    <url>https://repo.velacorp.vn/repository/vela.core-snapshots/</url>-->
+        <!--                </snapshotRepository>-->
+        <!--            </distributionManagement>-->
+        <!--        </profile>-->
+    </profiles>
+
+    <build>
+        <!--        <plugins>-->
+        <!--            <plugin>-->
+        <!--                <groupId>org.springframework.boot</groupId>-->
+        <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+        <!--            </plugin>-->
+        <!--        </plugins>-->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.plugins.version}</version>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
