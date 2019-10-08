@@ -1,7 +1,7 @@
 package com.syphan.practice.commonservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.syphan.practice.commonservice.util.OpenApiBaseResponse;
+import com.syphan.practice.commonservice.util.response.OpenApiBaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;

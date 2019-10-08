@@ -1,4 +1,4 @@
-package com.syphan.practice.commonservice.util;
+package com.syphan.practice.commonservice.util.response;
 
 import com.syphan.practice.commonservice.model.wrapper.PageWrapper;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.syphan.practice.commonservice.util;
+package com.syphan.practice.commonservice.util.response;
 
 import lombok.Getter;
 import lombok.Setter;
