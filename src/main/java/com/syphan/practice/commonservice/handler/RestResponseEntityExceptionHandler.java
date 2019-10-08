@@ -12,9 +12,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -22,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Autowired
     private MessageSource messageSource;
@@ -31,6 +28,7 @@ public abstract class RestResponseEntityExceptionHandler extends ResponseEntityE
 
     @ExceptionHandler
     public ResponseEntity<Object> handleBusinessException(BIZException ex, WebRequest request) throws BIZException {
+        logger.debug(String.format("%s %s", "Occurred BIZException. Message -", ex.getMessage()), ex);
         HttpStatus httpStatus;
         switch (ex.getErrType()) {
             case CONSTRAINT:
@@ -38,7 +36,6 @@ public abstract class RestResponseEntityExceptionHandler extends ResponseEntityE
                 httpStatus = HttpStatus.BAD_REQUEST;
                 break;
             }
-
             default: {
                 httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             }
