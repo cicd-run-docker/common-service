@@ -13,9 +13,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +28,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     private Logger logger = LoggerFactory.getLogger(ResponseEntityExceptionHandler.class);
 
-    @ExceptionHandler
-    public ResponseEntity<Object> handleBusinessException(BIZException ex, WebRequest request) throws BIZException {
+    @ExceptionHandler(BIZException.class)
+    public ResponseEntity<Object> handleBusinessException(BIZException ex, WebRequest request) {
         logger.debug(String.format("%s %s", "Occurred BIZException. Message -", ex.getMessage()), ex);
         HttpStatus httpStatus;
         switch (ex.getErrType()) {
@@ -71,6 +73,24 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
         return handleExceptionInternal(
                 ex, response != null ? response : bindingResultErrorResponse, new HttpHeaders(), httpStatus, request
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        String requestURI = request instanceof ServletWebRequest ? ((ServletWebRequest) request).getRequest().getRequestURI() : "";
+        logger.debug(String.format("%s%s%s%s", "Access denied when accessing '", requestURI, "' resources. Message - ", ex.getMessage()), ex);
+        String errCode = "Forbidden";
+        OpenApiBaseResponse response = new OpenApiBaseResponse();
+        response.setHttpStatusCode(HttpStatus.FORBIDDEN.value());
+        response.setCode(errCode);
+        try {
+            response.setMessage(messageSource.getMessage(errCode, null, LocaleContextHolder.getLocale()));
+        } catch (Exception e) {
+            response.setMessage(errCode);
+        }
+        return handleExceptionInternal(
+                ex, response, new HttpHeaders(), HttpStatus.valueOf(response.getHttpStatusCode()), request
         );
     }
 
