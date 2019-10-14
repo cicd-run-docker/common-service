@@ -28,29 +28,31 @@ import java.util.concurrent.Future;
 public class TracingFilter implements Filter {
     private Logger logger = LoggerFactory.getLogger(TracingFilter.class);
 
-    private Tracer tracer;
-    private TraceContext.Extractor<Map<String, String>> extractor;
-    private TraceContext.Injector<Map<String, String>> injector;
+    private Tracer tracer = null;
+    private TraceContext.Extractor<Map<String, String>> extractor = null;
+    private TraceContext.Injector<Map<String, String>> injector = null;
 
     public void setTracing(Tracing tracing) {
         logger.debug("called setTracing method");
-        tracer = tracing.tracer();
-        extractor = tracing.propagation().extractor(GETTER);
-        injector = tracing.propagation().injector(SETTER);
+        System.out.println("called setTracing method: ###############-----------------");
+        this.tracer = tracing.tracer();
+        this.extractor = tracing.propagation().extractor(GETTER);
+        this.injector = tracing.propagation().injector(SETTER);
     }
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        System.out.println("called invoker method: ###############-----------------");
         logger.debug("called invoker method");
         if (tracer != null) {
-            RpcContext rpcContext = RpcContext.getContext();
-            Span.Kind kind = rpcContext.isProviderSide() ? Span.Kind.SERVER : Span.Kind.CLIENT;
+            final RpcContext rpcContext = RpcContext.getContext();
+            final Span.Kind kind = rpcContext.isProviderSide() ? Span.Kind.SERVER : Span.Kind.CLIENT;
             final Span span;
             if (kind == Span.Kind.CLIENT) {
                 span = tracer.nextSpan();
-                injector.inject(span.context(), invocation.getAttachments());
+                if (this.injector != null) this.injector.inject(span.context(), invocation.getAttachments());
             } else {
-                TraceContextOrSamplingFlags extracted = extractor.extract(invocation.getAttachments());
+                final TraceContextOrSamplingFlags extracted = this.extractor.extract(invocation.getAttachments());
                 span = extracted.context() != null
                         ? tracer.joinSpan(extracted.context())
                         : tracer.nextSpan(extracted);
@@ -60,7 +62,7 @@ public class TracingFilter implements Filter {
                 span.kind(kind);
                 String service = invoker.getInterface().getSimpleName();
                 String method = RpcUtils.getMethodName(invocation);
-                span.name(service + "/" + method);
+                span.name(String.format(service, "/", method));
                 parseRemoteAddress(rpcContext, span);
                 span.start();
             }
@@ -69,6 +71,9 @@ public class TracingFilter implements Filter {
             try {
                 tracer.withSpanInScope(span);
                 Result result = invoker.invoke(invocation);
+                if (result.hasException()) {
+                    onError(result.getException(), span);
+                }
                 isOneWay = RpcUtils.isOneway(invoker.getUrl(), invocation);
                 Future<Object> future = rpcContext.getFuture();
                 if (future instanceof FutureAdapter) {

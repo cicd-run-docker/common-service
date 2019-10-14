@@ -131,6 +131,11 @@
             <artifactId>zookeeper</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

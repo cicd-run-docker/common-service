@@ -1,0 +1,16 @@
+logging:
+  file:
+    max-size: 100MB
+    max-history: 15
+  level:
+    org:
+      apache:
+        dubbo: debug
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: trace
+    com:
+      jidian: debug
