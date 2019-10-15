@@ -50,7 +50,7 @@ public class TracingFilter implements Filter {
             final Span span;
             if (kind == Span.Kind.CLIENT) {
                 span = tracer.nextSpan();
-                if (this.injector != null) this.injector.inject(span.context(), invocation.getAttachments());
+                this.injector.inject(span.context(), invocation.getAttachments());
             } else {
                 final TraceContextOrSamplingFlags extracted = this.extractor.extract(invocation.getAttachments());
                 span = extracted.context() != null
