@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -29,9 +31,20 @@ public class BaseEntity implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name = "create_at", nullable = false)
-    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
+    private Timestamp createAt;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name = "update_at", nullable = false)
-    private Timestamp updateAt = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateAt;
+
+    @PrePersist
+    public void PrePersist() {
+        this.createAt = new Timestamp(System.currentTimeMillis());
+        this.updateAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updateAt = new Timestamp(System.currentTimeMillis());
+    }
 }
