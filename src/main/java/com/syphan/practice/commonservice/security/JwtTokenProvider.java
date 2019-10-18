@@ -23,7 +23,7 @@ public abstract class JwtTokenProvider {
 
     Boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtTokenProperties.getSecret()).parseClaimsJwt(token);
+            Jwts.parser().setSigningKey(jwtTokenProperties.getSecret()).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException ex) {
             logger.error("Expired JWT token", ex);

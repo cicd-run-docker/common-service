@@ -34,7 +34,6 @@ public class TracingFilter implements Filter {
 
     public void setTracing(Tracing tracing) {
         logger.debug("called setTracing method");
-        System.out.println("called setTracing method: ###############-----------------");
         this.tracer = tracing.tracer();
         this.extractor = tracing.propagation().extractor(GETTER);
         this.injector = tracing.propagation().injector(SETTER);
@@ -42,7 +41,6 @@ public class TracingFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        System.out.println("called invoker method: ###############-----------------");
         logger.debug("called invoker method");
         if (tracer != null) {
             final RpcContext rpcContext = RpcContext.getContext();
