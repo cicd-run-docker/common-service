@@ -2,7 +2,6 @@ package com.syphan.practice.commonservice.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,9 +11,8 @@ import java.util.Objects;
 import java.util.Set;
 
 @AllArgsConstructor
-@NoArgsConstructor
-@Getter
 @Setter
+@Getter
 public class UserPrincipal implements UserDetails {
     private int id;
 
@@ -27,6 +25,11 @@ public class UserPrincipal implements UserDetails {
     private Set<String> roles;
 
     private Collection<GrantedAuthority> authorities;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.authorities;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
