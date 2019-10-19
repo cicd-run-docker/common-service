@@ -12,6 +12,9 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
@@ -94,7 +97,14 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         );
     }
 
-//    @Override
+    @Override
+    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        logger.debug(String.format("%s%s%s%s", "An BindException occurred: ", ex.getMessage(), ", httpStatus: ", status));
+        return handleExceptionInternal(ex, genValidationResponseBody(status, ex.getBindingResult().getFieldErrors(),
+                ex.getBindingResult().getGlobalErrors()), headers, status, request);
+    }
+
+    //    @Override
 //    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 //                                                                  HttpHeaders headers,
 //                                                                  HttpStatus status,
@@ -104,19 +114,19 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 //        return handleExceptionInternal(ex, genValidationResponseBode(status, ex.getBindingResult().getFieldErrors(),
 //                ex.getBindingResult().getGlobalErrors()), headers, status, request);
 //    }
-//
-//    private OpenApiBaseResponse genValidationResponseBode(HttpStatus status, List<FieldError> fieldErrors,
-//                                                          List<ObjectError> globalErrors) {
-//        String fileName = fieldErrors.isEmpty() ? (globalErrors.isEmpty() ? "" : globalErrors.get(0).getObjectName()) : fieldErrors.get(0).getField();
-//        String code = fieldErrors.isEmpty() ? (globalErrors.isEmpty() ? "" : globalErrors.get(0).getDefaultMessage()) : fieldErrors.get(0).getDefaultMessage();
-//        OpenApiBaseResponse response = new OpenApiBaseResponse();
-//        response.setHttpStatusCode(status.value());
-//        response.setCode(String.format("%s%s", "Invalid.", fileName));
-//        try {
-//            response.setMessage(messageSource.getMessage(code, null, LocaleContextHolder.getLocale()));
-//        } catch (Exception e) {
-//            response.setMessage(code);
-//        }
-//        return response;
-//    }
+
+    private OpenApiBaseResponse genValidationResponseBody(HttpStatus status, List<FieldError> fieldErrors,
+                                                          List<ObjectError> globalErrors) {
+        String fileName = fieldErrors.isEmpty() ? (globalErrors.isEmpty() ? "" : globalErrors.get(0).getObjectName()) : fieldErrors.get(0).getField();
+        String code = fieldErrors.isEmpty() ? (globalErrors.isEmpty() ? "" : globalErrors.get(0).getDefaultMessage()) : fieldErrors.get(0).getDefaultMessage();
+        OpenApiBaseResponse response = new OpenApiBaseResponse();
+        response.setHttpStatusCode(status.value());
+        response.setCode(String.format("%s%s", "Invalid.", fileName));
+        try {
+            response.setMessage(messageSource.getMessage(code, null, LocaleContextHolder.getLocale()));
+        } catch (Exception e) {
+            response.setMessage(code);
+        }
+        return response;
+    }
 }
