@@ -27,11 +27,13 @@ public abstract class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    private String token;
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = getJwtTokenFromRequest(httpServletRequest);
+        token = getJwtTokenFromRequest(httpServletRequest);
         if (token != null && jwtTokenProvider.validateToken(token)) {
             Integer userId = jwtTokenProvider.getUserIdFromJWT(token);
             if (userId != null) {
@@ -57,5 +59,9 @@ public abstract class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && token.startsWith(jwtTokenProperties.getTokenPrefix())) {
             return token.substring(jwtTokenProperties.getTokenPrefix().length()).trim();
         } else return null;
+    }
+
+    public String getToken() {
+        return token;
     }
 }
